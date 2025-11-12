@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import api from "../api/api";
 
 export default function ProductFormPage() {
   const { id } = useParams();
@@ -24,9 +25,7 @@ export default function ProductFormPage() {
     const fetchProduct = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:4000/admin/products/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get(`/admin/products/${id}`);
         const p = res.data.product;
         setProduct({
           code: p.code || "",
@@ -35,7 +34,7 @@ export default function ProductFormPage() {
           originalPrice: p.originalPrice?.toString() || "",
           salePrice: p.salePrice?.toString() || "",
         });
-        setPreview(p.image ? `http://localhost:4000${p.image}` : null);
+        setPreview(p.image ? `${process.env.REACT_APP_API_URL}${p.image}` : null);
       } catch (err) {
         console.error("❌ Error loading product:", err);
         alert("Failed to load product.");
@@ -70,15 +69,11 @@ export default function ProductFormPage() {
       formData.append("originalPrice", product.originalPrice);
       formData.append("salePrice", product.salePrice);
       if (selectedFile) formData.append("image", selectedFile);
-
-      const token = localStorage.getItem("token");
-      const headers = { Authorization: `Bearer ${token}` };
-
       if (id) {
-        await axios.put(`http://localhost:4000/admin/products/${id}`, formData, { headers });
+        await api.put(`/admin/products/${id}`, formData);
         alert("✅ Product updated!");
       } else {
-        await axios.post(`http://localhost:4000/admin/products`, formData, { headers });
+        await api.post(`/admin/products`, formData);
         alert("✅ Product added!");
       }
       navigate("/dashboard");

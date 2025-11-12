@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import api from "../api/api";
 
 interface Product {
   id: number;
@@ -31,10 +32,7 @@ const OrderList = () => {
 
   const fetchOrders = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:4000/admin/orders", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.get(`/admin/orders`);
       setOrders(res.data.orders);
     } catch (error) {
       console.error(error);
@@ -52,11 +50,9 @@ const OrderList = () => {
   const handleStatusChange = async (orderId: number, newStatus: string) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.patch(
-        `http://localhost:4000/admin/orders/${orderId}/status`,
-        { status: newStatus },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.patch(
+        `/admin/orders/${orderId}/status`,
+        { status: newStatus });
       fetchOrders(); // refresh list
     } catch (error) {
       console.error(error);

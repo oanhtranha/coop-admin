@@ -1,27 +1,44 @@
 import { useState } from "react";
+import api from "../api/api";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("admin@coop.no");
   const [password, setPassword] = useState("123456");
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      alert("Please enter email and password");
-      return;
-    }
-    try {
-      const res = await axios.post("http://localhost:4000/user/login", { email, password });
-      const token = res.data.token;
-      localStorage.setItem("token", token);
-      navigate("/dashboard");
-    } catch (err: any) {
-      console.error(err);
-      alert(err.response?.data?.message || "Login failed");
-    }
-  };
+  // const handleLogin = async () => {
+  //   if (!email || !password) {
+  //     alert("Please enter email and password");
+  //     return;
+  //   }
+  //   try {
+  //     const res = await api.post("/user/login", { email, password });
+  //     console.log(res.data.products);
+  //     const token = res.data.token;
+  //     localStorage.setItem("token", token);
+  //     navigate("/dashboard");
+  //   } catch (err: any) {
+  //     console.error(err);
+  //     alert(err.response?.data?.message || "Login failed");
+  //   }
+  // };
+const handleLogin = async () => {
+  if (!email || !password) {
+    alert("Please enter email and password");
+    return;
+  }
+  try {
+    const res = await api.post("/user/login", { email, password });
+    console.log(res.data); // xem dữ liệu trả về
+    const token = res.data.token;
+    localStorage.setItem("token", token);
+    navigate("/dashboard");
+  } catch (err: any) {
+    console.error(err);
+    alert(err.response?.data?.message || "Login failed");
+  }
+};
 
   return (
   <div

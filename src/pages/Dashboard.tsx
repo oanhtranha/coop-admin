@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../api/api";
 
 interface Product {
   id: number;
@@ -19,10 +19,7 @@ export default function Dashboard() {
 
   const fetchProducts = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:4000/admin/products", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.get(`/admin/products`);
       setProducts(res.data.products);
     } catch (err) {
       console.error(err);
@@ -36,10 +33,8 @@ export default function Dashboard() {
   const handleDelete = async (id: number) => {
     if (!window.confirm("Are you sure to delete this product?")) return;
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:4000/admin/products/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.delete(`/admin/products/${id}`);
+      console.log(res.data)
       fetchProducts();
     } catch (err) {
       console.error(err);
@@ -120,7 +115,7 @@ export default function Dashboard() {
                 <td style={{ padding: 12 }}>
                   {p.image ? (
                     <img
-                      src={`http://localhost:4000${p.image}`}
+                      src={`${process.env.REACT_APP_API_URL}${p.image}`}
                       alt={p.name}
                       style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 4 }}
                     />
