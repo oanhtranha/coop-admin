@@ -30,16 +30,26 @@ export default function Dashboard() {
     fetchProducts();
   }, []);
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("Are you sure to delete this product?")) return;
-    try {
-      const res = await api.delete(`/admin/products/${id}`);
-      console.log(res.data)
-      fetchProducts();
-    } catch (err) {
-      console.error(err);
+ const handleDelete = async (id: number) => {
+  if (!window.confirm("Are you sure to delete this product?")) return;
+  try {
+    const res = await api.delete(`/admin/products/${id}`);
+    alert(res.data.message || "Product deleted successfully.");
+    fetchProducts();
+  } catch (err: any) {
+    console.error("❌ Delete error:", err);
+
+    // Nếu server trả lỗi có response
+    if (err.response) {
+      const msg =
+        err.response.data?.message ||
+        "Failed to delete product due to server validation.";
+      alert(`❌ ${msg}`);
+    } else {
+      alert("❌ Cannot connect to server. Please try again later.");
     }
-  };
+  }
+};
 
   return (
     <div style={{ maxWidth: 1200, margin: "30px auto", padding: 20 }}>
@@ -115,7 +125,7 @@ export default function Dashboard() {
                 <td style={{ padding: 12 }}>
                   {p.image ? (
                     <img
-                      src={`${process.env.REACT_APP_API_URL}${p.image}`}
+                      src={`${p.image}`}
                       alt={p.name}
                       style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 4 }}
                     />
